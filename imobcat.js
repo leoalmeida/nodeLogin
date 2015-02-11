@@ -12,9 +12,8 @@ app.use(morgan());
 
 //Routes
 var routes = {};
-routes.posts = require('./route/posts.js');
+routes.posts = require('./route/syncs.js');
 routes.users = require('./route/users.js');
-routes.rss = require('./route/rss.js');
 
 
 app.all('*', function(req, res, next) {
@@ -26,43 +25,39 @@ app.all('*', function(req, res, next) {
   next();
 });
 
-//Get all published post
-app.get('/post', routes.posts.list);
 
-//Get all posts
-app.get('/post/all', jwt({secret: secret.secretToken}), tokenManager.verifyToken, routes.posts.listAll);
-
-//Get the post id
-app.get('/post/:id', routes.posts.read); 
-
-//Like the post id
-app.post('/post/like', routes.posts.like);
-
-//Unlike the post id
-app.post('/post/unlike', routes.posts.unlike);
-
-//Get posts by tag
-app.get('/tag/:tagName', routes.posts.listByTag); 
-
-//Create a new user
-app.post('/user/register', routes.users.register); 
+//User login End points
+//Register
+app.post('/users/register', routes.users.register); 
 
 //Login
-app.post('/user/signin', routes.users.signin); 
+app.post('/users/signin', routes.users.signin); 
 
 //Logout
-app.get('/user/logout', jwt({secret: secret.secretToken}), routes.users.logout); 
+app.get('/users/logout', jwt({secret: secret.secretToken}), routes.users.logout); 
 
-//Create a new post
-app.post('/post', jwt({secret: secret.secretToken}), tokenManager.verifyToken , routes.posts.create); 
 
-//Edit the post id
-app.put('/post', jwt({secret: secret.secretToken}), tokenManager.verifyToken, routes.posts.update); 
+//Change items
+//Get all updated items
+app.get('/syncs/items', routes.syncs.list);
 
-//Delete the post id
-app.delete('/post/:id', jwt({secret: secret.secretToken}), tokenManager.verifyToken, routes.posts.delete); 
+//Get all items
+app.get('/syncs/items/all', jwt({secret: secret.secretToken}), tokenManager.verifyToken, routes.syncs.listAll);
 
-//Serve the rss feed
-app.get('/rss', routes.rss.index);
+//get a specific item
+app.get('/syncs/items/:id', routes.syncs.read); 
+
+//publish new items 
+app.post('/syncs/items', jwt({secret: secret.secretToken}), tokenManager.verifyToken , routes.syncs.create); 
+
+//publish updated items 
+app.put('/syncs/items', jwt({secret: secret.secretToken}), tokenManager.verifyToken, routes.syncs.update); 
+
+//Delete a specific item
+app.delete('/syncs/items/:id', jwt({secret: secret.secretToken}), tokenManager.verifyToken, routes.syncs.delete);
+
+//Delete all selected items
+app.delete('/syncs/items', jwt({secret: secret.secretToken}), tokenManager.verifyToken, routes.syncs.delete); 
+
 
 console.log('Blog API is starting on port 3001');
