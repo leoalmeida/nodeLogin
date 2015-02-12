@@ -12,7 +12,7 @@ app.use(morgan());
 
 //Routes
 var routes = {};
-routes.posts = require('./route/syncs.js');
+routes.syncs = require('./route/syncs.js');
 routes.users = require('./route/users.js');
 
 
