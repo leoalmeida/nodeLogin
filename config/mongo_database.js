@@ -40,8 +40,6 @@ User.pre('save', function(next) {
   var user = this;
 
   if (!user.isModified('password')) return next();
-  
-  crypt
 
   bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt) {
     if (err) return next(err);
