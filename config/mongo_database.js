@@ -31,7 +31,8 @@ var Publish = new Schema({
     is_published: { type: Boolean, default: false },
     content: { type: String, required: true },
     created: { type: Date, default: Date.now },
-    updated: { type: Date, default: Date.now }
+    updated: { type: Date, default: Date.now },
+    synced: { type: Date, default: Date.now }
 });
 
 // Bcrypt middleware on UserSchema
