@@ -23,17 +23,16 @@ var User = new Schema({
     created: { type: Date, default: Date.now }
 });
 
-var Post = new Schema({
+var Publish = new Schema({
+    type: { type: String, required: true },
+    subtype: { type: String, required: true },
     title: { type: String, required: true },
     tags: [ {type: String} ],
     is_published: { type: Boolean, default: false },
     content: { type: String, required: true },
     created: { type: Date, default: Date.now },
-    updated: { type: Date, default: Date.now },
-    read: { type: Number, default: 0 },
-    likes: { type: Number, default: 0 }
+    updated: { type: Date, default: Date.now }
 });
-
 
 // Bcrypt middleware on UserSchema
 User.pre('save', function(next) {
@@ -63,9 +62,9 @@ User.methods.comparePassword = function(password, cb) {
 
 //Define Models
 var userModel = mongoose.model('User', User);
-var postModel = mongoose.model('Post', Post);
+var pubModel = mongoose.model('Publish', Publish);
 
 
 // Export Models
 exports.userModel = userModel;
-exports.postModel = postModel;
+exports.pubModel = pubModel;

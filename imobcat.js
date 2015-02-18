@@ -39,13 +39,16 @@ app.get('/users/logout', jwt({secret: secret.secretToken}), routes.users.logout)
 
 //Change items
 //Get all updated items
-app.get('/syncs/items', routes.syncs.list);
+app.get('/syncs/items', jwt({secret: secret.secretToken}), tokenManager.verifyToken, routes.syncs.listPublished);
 
 //Get all items
-app.get('/syncs/items/all', jwt({secret: secret.secretToken}), tokenManager.verifyToken, routes.syncs.listAll);
+app.get('/syncs/items/all', routes.syncs.listAll);
 
 //get a specific item
-app.get('/syncs/items/:id', routes.syncs.read); 
+app.get('/syncs/item/:id', jwt({secret: secret.secretToken}), tokenManager.verifyToken, routes.syncs.read);
+
+//get item by tag
+app.get('/syncs/items/tag/:id', jwt({secret: secret.secretToken}), tokenManager.verifyToken, routes.syncs.listByTag);
 
 //publish new items 
 app.post('/syncs/items', jwt({secret: secret.secretToken}), tokenManager.verifyToken , routes.syncs.create); 
@@ -54,7 +57,7 @@ app.post('/syncs/items', jwt({secret: secret.secretToken}), tokenManager.verifyT
 app.put('/syncs/items', jwt({secret: secret.secretToken}), tokenManager.verifyToken, routes.syncs.update); 
 
 //Delete a specific item
-app.delete('/syncs/items/:id', jwt({secret: secret.secretToken}), tokenManager.verifyToken, routes.syncs.delete);
+app.delete('/syncs/item/:id', jwt({secret: secret.secretToken}), tokenManager.verifyToken, routes.syncs.delete);
 
 //Delete all selected items
 app.delete('/syncs/items', jwt({secret: secret.secretToken}), tokenManager.verifyToken, routes.syncs.delete); 

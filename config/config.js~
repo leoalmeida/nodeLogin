@@ -1,6 +1,6 @@
 var config = {};
 
-config.appName = 'imobcat';
+config.appName = 'imobCat';
 config.url = 'http://localhost/';
 
 module.exports = config;

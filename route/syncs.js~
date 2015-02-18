@@ -1,11 +1,43 @@
-var db = require('../config/mongo_database.js');
+var db = require('../config/mongo_database');
 
-var publicFields = '_id title url tags content created likes';
+var publicFields = '_id title';
 
-exports.list = function(req, res) {
+exports.listByTag = function(req, res) {
+  
+  if (!req.user) {
+		return res.send(401);
+	}
+	
+	var tagName = req.params.tagName || '';
+	if (tagName == '') {
+		return res.send(400);
+	}
+
+	var query = db.postModel.find({tags: tagName, is_published: true});
+	query.select(publicFields);
+	query.sort('-created');
+	query.exec(function(err, results) {
+		if (err) {
+  			console.log(err);
+  			return res.send(400);
+  		}
+
+  		for (var postKey in results) {
+    		results[postKey].content = results[postKey].content.substr(0, 400);
+    	}
+
+  		return res.json(200, results);
+	});
+}
+
+exports.list = function(req, res) {  
+
+  if (!req.user) {
+		return res.send(401);
+	}
+  
 	var query = db.postModel.find({is_published: true});
 
-	query.select(publicFields);
 	query.sort('-created');
 	query.exec(function(err, results) {
 		if (err) {
@@ -22,11 +54,10 @@ exports.list = function(req, res) {
 };
 
 exports.listAll = function(req, res) {
-	if (!req.user) {
-		return res.send(401);
-	}
-
+	
 	var query = db.postModel.find();
+	
+	//query.select(publicFields);
 	query.sort('-created');
 	query.exec(function(err, results) {
 		if (err) {
@@ -43,13 +74,17 @@ exports.listAll = function(req, res) {
 };
 
 exports.read = function(req, res) {
+  
+  if (!req.user) {
+		return res.send(401);
+	}
+  
 	var id = req.params.id || '';
 	if (id == '') {
 		return res.send(400);
 	}
 
 	var query = db.postModel.findOne({_id: id});
-	query.select(publicFields);
 	query.exec(function(err, result) {
 		if (err) {
   			console.log(err);
@@ -65,40 +100,6 @@ exports.read = function(req, res) {
   		}
 	});
 };
-
-exports.like = function(req, res) {
-	var id = req.body.id || '';
-	if (id == '') {
-		return res.send(400);
-	}
-
-
-	db.postModel.update({_id: id}, { $inc: { likes: 1 } }, function(err, nbRows, raw) {
-		if (err) {
-			console.log(err);
-			return res.send(400);
-		}
-
-		return res.send(200);
-	});
-}
-
-exports.unlike = function(req, res) {
-	var id = req.body.id || '';
-	if (id == '') {
-		return res.send(400);
-	}
-
-
-	db.postModel.update({_id: id}, { $inc: { likes: -1 } }, function(err, nbRows, raw) {
-		if (err) {
-			console.log(err);
-			return res.send(400);
-		}
-
-		return res.send(200);
-	});	
-}
 
 exports.create = function(req, res) {
 	if (!req.user) {
@@ -197,25 +198,3 @@ exports.delete = function(req, res) {
 	});
 };
 
-exports.listByTag = function(req, res) {
-	var tagName = req.params.tagName || '';
-	if (tagName == '') {
-		return res.send(400);
-	}
-
-	var query = db.postModel.find({tags: tagName, is_published: true});
-	query.select(publicFields);
-	query.sort('-created');
-	query.exec(function(err, results) {
-		if (err) {
-  			console.log(err);
-  			return res.send(400);
-  		}
-
-  		for (var postKey in results) {
-    		results[postKey].content = results[postKey].content.substr(0, 400);
-    	}
-
-  		return res.json(200, results);
-	});
-}
